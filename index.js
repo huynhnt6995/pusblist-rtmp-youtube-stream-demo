@@ -1,7 +1,11 @@
 const { launch, getStream } = require("puppeteer-stream");
 const fs = require("fs");
-
 var ffmpeg = require('fluent-ffmpeg');
+
+
+const SOURCE_VIDEO = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+const DEST_VIDEO = "rtmp://x.rtmp.youtube.com/live2/4wfb-5482-tjxw-u4b1-1t1m"
+
 
 async function test() {
     const browser = await launch({
@@ -12,11 +16,8 @@ async function test() {
     });
 
     const page = await browser.newPage();
-    await page.goto("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+    await page.goto(SOURCE_VIDEO);
     const stream = await getStream(page, { audio: true, video: true });
-    // const stream = fs.createReadStream('input.mp4')
-
-    // const outStream = fs.createWriteStream(__dirname + "/test.mp4");
 
     ffmpeg()
         .addOptions([
@@ -45,8 +46,8 @@ async function test() {
         .on('end', function () {
             console.log('Processing finished !');
         })
-        .output('rtmp://x.rtmp.youtube.com/live2/4wfb-5482-tjxw-u4b1-1t1m').run()
-        // .pipe(outStream, { end: true });
+        // .output('rtmp://127.0.0.1/live/123456').run()
+        .output(DEST_VIDEO).run()
 
 }
 
